@@ -1,0 +1,38 @@
+import json
+import boto3
+import datetime
+
+s3 = boto3.client('s3')
+my_bucket_name = 'swiftgate-inbox'
+my_arch_bucket_name ='swiftgate-inbox-arch'
+list1=[]
+lst_STAY=[]
+lst_MOVE=[]
+lst_MOVE.clear()
+lst_STAY.clear()
+def list():
+        bucket=s3.list_objects_v2(Bucket=my_bucket_name,Delimiter="Key")
+        return bucket
+def lambda_handler (event, context):
+    b=list()
+
+    list1=b.get("Contents")
+    
+    for i in list1:
+        z=(i.get('Key'))
+        if i.get('LastModified').date() > datetime.datetime.now().date() - datetime.timedelta(days=30):
+            lst_STAY.append(z)
+        else:
+            lst_MOVE.append(z)
+    if i.get('LastModified').date() < datetime.datetime.now().date() - datetime.timedelta(days=30):
+        for j in lst_MOVE:
+            s_3 = boto3.resource('s3')
+            copy_source = {'Bucket': my_bucket_name, 'Key': j}
+            bucket = s_3.Bucket(my_arch_bucket_name)
+            bucket.copy(copy_source, j)
+            s_3.Object(my_bucket_name, j).delete()
+            
+    print("OBJECTS TO MOVE: ")
+    print(lst_MOVE)
+
+    return (lst_STAY)
