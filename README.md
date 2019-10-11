@@ -1,4 +1,4 @@
-# AWS Lambda Python boto3
+# AWS Lambda Python boto3 moving files between S3 (archive)
 
 This script will copy all files that are older than one month from my_bucket_name to my_arch_bucket_name (this variables 
 are editable). 
